@@ -11,6 +11,9 @@
         "tuple": "c",
         "type_traits": "c",
         "utility": "c",
-        "optional": "c"
+        "optional": "c",
+        "initializer_list": "c",
+        "typeindex": "cpp",
+        "typeinfo": "cpp"
     }
 }
