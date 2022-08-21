@@ -14,6 +14,8 @@
         "optional": "c",
         "initializer_list": "c",
         "typeindex": "cpp",
-        "typeinfo": "cpp"
+        "typeinfo": "cpp",
+        "bitset": "c",
+        "buffer.h": "c"
     }
 }
