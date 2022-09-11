@@ -3,8 +3,6 @@
 
 #include <stdint.h>
 
-#include "../buffer/buffer.h"
-
 #ifdef __cplusplus
 extern "C" {
 #endif
