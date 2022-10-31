@@ -1,35 +1,36 @@
-* E:\TinBus\sim\minimal.sxsch
+* Z:\Tinbus\TinBus\sim\opto.sxsch
 *#SIMETRIX
-V1 V1_P 0 12
-V2 V2_P 0 5
-V3 V3_P 0 PULSE 0 3.3 0 100n 100n 2u 100u
-R1 Q5_E R1_N 10
-R2 D2_N 0 1k
-R3 D1_N 0 1k
-L1 V1_P L1_N 1m  
-R4 V3_P C4_N 1k
-R5 L1_N R5_N 47k
-R6 V2_P C2_N 100k
-R7 R7_P R7_N 1k
-R8 0 C5_N 1k
-D1 L1_N D1_N D1N4148
-D2 L1_N D2_N D1N4148
-D3 L1_N D3_N D1N4148
-D4 0 C2_N D1N4148
-D5 C2_N V2_P D1N4148
-D6 L1_N D6_N D1N4148
-Q2 R7_N Q5_E R1_N 0 BC548B
-Q3 Q3_C Q3_B 0 0 BD139
-X$Q4 D6_N C5_N 0 2N7002 pinnames: D G S
-Q5 R7_P R7_N Q5_E 0 BD139
-X$Q6 D3_N C4_N 0 BS170 pinnames: D G S
-C1 D1_N 0 10u  
-C2 R5_N C2_N 1n  
-C3 D2_N 0 10u  
-C4 D3_N C4_N 10f  
-C5 D6_N C5_N 100p  
-.GRAPH L1_N curveLabel="L1-N" nowarn=true ylog=auto xlog=auto
-.GRAPH V3_P curveLabel="Probe2-NODE" nowarn=true ylog=auto xlog=auto
-.GRAPH C2_N curveLabel="D5-anode" nowarn=true ylog=auto xlog=auto
+V1 V1_P 0 3.3
+V2 V2_P V2_N 12
+V3 R2_P 0 PULSE 0 7u 0 200n 200n 20u 100u
+R1 V2_P 0 330
+R2 R2_P R2_N 1k
+R3 R3_P V2_P 1k
+R6 0 R6_N 1.2k
+R7 Q5_E Q1_E 18
+Q10 V1_P G1_N Q10_E 0 BC548B
+D1 R3_P D1_N D1N4148
+R8 R8_P R3_P 10k
+R9 D6_N 0 1.5k
+D2 D3_N D2_N D1N4148
+D3 Q2_C D3_N D1N4148
+D4 V2_P D4_N D1N4148
+X$D5 D5_P D1_N BZX84-4V7 pinnames: P N
+D6 D2_N D6_N D1N4148
+R17 Q10_E 0 1k
+Q1 R6_N Q5_E Q1_E 0 BC548B
+Q2 Q2_C R8_P D5_P 0 BC858C
+Q5 0 R6_N Q5_E 0 BD139
+G1 V1_P G1_N R2_N 0 1
+E1 E1_P 0 R2_P 0 100k
+Q7 V2_P Q10_E 0 0 BC548B
+C1 R2_N 0 2.2n  
+C2 D1_N 0 1u  
+C3 D4_N 0 1u  
+V$IPROBE1 Q1_E V2_N 0.0 
+.GRAPH IPROBE1#p CurveLabel=IPROBE1
+.GRAPH E1_P curveLabel="V3-pos" nowarn=true ylog=auto xlog=auto
+.GRAPH D6_N curveLabel="D2-cathode" nowarn=true ylog=auto xlog=auto
+.GRAPH V2_P curveLabel="Q9-collector" nowarn=true ylog=auto xlog=auto
 .TRAN 200u
 
