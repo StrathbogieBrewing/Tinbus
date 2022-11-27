@@ -19,7 +19,6 @@ static const canbus_message_t test_vectors[] = {
     {.id = 0x0, .ide = true, .rtr = false, .dlc = 8, .data = {0x12, 0x34, 0x56, 0x78, 0x9a, 0xbc, 0xde, 0xf0}}};
 
 int main(int argc, char *argv[]) {
-    
     int vectors = sizeof(test_vectors) / sizeof(canbus_message_t);
     for (int i = 0; i < vectors; i++) {
         dump_message(&test_vectors[i]);
@@ -33,20 +32,5 @@ int main(int argc, char *argv[]) {
         dump_message(&can_msg_test);
         assert(memcmp(&can_msg_test, &test_vectors[i], sizeof(canbus_message_t)) == 0);
     }
-
-    // dump_message(&can_msg);
-
-    // frame_error_t error =
-    // frame_enframe(&can_msg, &tin_frame);
-
-    // char dump[(TINBUS_BUFFER_SIZE * TINBUS_BITS_IN_BYTE) + 1];
-    // tinbus_dump(&tin_frame, dump);
-    // printf("Encoded frame >%s<\n", dump);
-
-    // canbus_message_t can_msg_deframed;
-    // frame_deframe(&tin_frame, &can_msg_deframed);
-
-    // dump_message(&can_msg_deframed);
-
     return EXIT_SUCCESS;
 }
