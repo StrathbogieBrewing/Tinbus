@@ -4,6 +4,8 @@ cmake_install.cmake
 
 build
 
+**/PCB/History/**
+
 *.lss
 
 # Prerequisites

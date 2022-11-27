@@ -1,0 +1,16 @@
+Record=SheetSymbol|SourceDocument=Main.SchDoc|Designator=A0|SchDesignator=A0|FileName=Analog.SchDoc|SymbolType=Normal|RawFileName=Analog.SchDoc
+Record=SheetSymbol|SourceDocument=Main.SchDoc|Designator=A1|SchDesignator=A1|FileName=Analog.SchDoc|SymbolType=Normal|RawFileName=Analog.SchDoc
+Record=SheetSymbol|SourceDocument=Main.SchDoc|Designator=A2|SchDesignator=A2|FileName=Analog.SchDoc|SymbolType=Normal|RawFileName=Analog.SchDoc
+Record=SheetSymbol|SourceDocument=Main.SchDoc|Designator=A3|SchDesignator=A3|FileName=Analog.SchDoc|SymbolType=Normal|RawFileName=Analog.SchDoc
+Record=SheetSymbol|SourceDocument=Main.SchDoc|Designator=C0|SchDesignator=C0|FileName=Communications.SchDoc|SymbolType=Normal|RawFileName=Communications.SchDoc
+Record=SheetSymbol|SourceDocument=Main.SchDoc|Designator=D0|SchDesignator=D0|FileName=Digital.SchDoc|SymbolType=Normal|RawFileName=Digital.SchDoc
+Record=SheetSymbol|SourceDocument=Main.SchDoc|Designator=D1|SchDesignator=D1|FileName=Digital.SchDoc|SymbolType=Normal|RawFileName=Digital.SchDoc
+Record=SheetSymbol|SourceDocument=Main.SchDoc|Designator=D2|SchDesignator=D2|FileName=Digital.SchDoc|SymbolType=Normal|RawFileName=Digital.SchDoc
+Record=SheetSymbol|SourceDocument=Main.SchDoc|Designator=D3|SchDesignator=D3|FileName=Digital.SchDoc|SymbolType=Normal|RawFileName=Digital.SchDoc
+Record=SheetSymbol|SourceDocument=Main.SchDoc|Designator=D4|SchDesignator=D4|FileName=Digital.SchDoc|SymbolType=Normal|RawFileName=Digital.SchDoc
+Record=SheetSymbol|SourceDocument=Main.SchDoc|Designator=D5|SchDesignator=D5|FileName=Digital.SchDoc|SymbolType=Normal|RawFileName=Digital.SchDoc
+Record=SheetSymbol|SourceDocument=Main.SchDoc|Designator=D6|SchDesignator=D6|FileName=Digital.SchDoc|SymbolType=Normal|RawFileName=Digital.SchDoc
+Record=SheetSymbol|SourceDocument=Main.SchDoc|Designator=D7|SchDesignator=D7|FileName=Digital.SchDoc|SymbolType=Normal|RawFileName=Digital.SchDoc
+Record=SheetSymbol|SourceDocument=Main.SchDoc|Designator=M0|SchDesignator=M0|FileName=Controller.SchDoc|SymbolType=Normal|RawFileName=Controller.SchDoc
+Record=SheetSymbol|SourceDocument=Main.SchDoc|Designator=P0|SchDesignator=P0|FileName=PowerSupply.SchDoc|SymbolType=Normal|RawFileName=PowerSupply.SchDoc
+Record=TopLevelDocument|FileName=Main.SchDoc
