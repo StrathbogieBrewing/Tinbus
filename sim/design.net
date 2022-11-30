@@ -1,36 +1,43 @@
-* Z:\Tinbus\TinBus\sim\opto.sxsch
+* Z:\Tinbus\Tinbus\sim\tinbus-bi.sxsch
 *#SIMETRIX
 V1 V1_P 0 3.3
 V2 V2_P V2_N 12
-V3 R2_P 0 PULSE 0 7u 0 200n 200n 20u 100u
 R1 V2_P 0 330
+V3 R2_P 0 PULSE 0 7u 0 200n 200n 20u 100u
 R2 R2_P R2_N 1k
-R3 R3_P V2_P 1k
+R3 R3_P D11_N 1k
+R4 D9_P D11_N 47k
+R5 R5_P D5_N 47k
 R6 0 R6_N 1.2k
+D11 0 D11_N BAT54
 R7 Q5_E Q1_E 18
+R8 R5_P R3_P 47k
 Q10 V1_P G1_N Q10_E 0 BC548B
-D1 R3_P D1_N D1N4148
-R8 R8_P R3_P 10k
-R9 D6_N 0 1.5k
 D2 D3_N D2_N D1N4148
+R9 D6_N D9_P 1.5k
 D3 Q2_C D3_N D1N4148
 D4 V2_P D4_N D1N4148
-X$D5 D5_P D1_N BZX84-4V7 pinnames: P N
+D5 R3_P D5_N BAT54
 D6 D2_N D6_N D1N4148
+D7 V2_P D11_N BAT54
+D8 D9_P V2_P BAT54
+D9 D9_P 0 BAT54
 R17 Q10_E 0 1k
 Q1 R6_N Q5_E Q1_E 0 BC548B
-Q2 Q2_C R8_P D5_P 0 BC858C
+Q2 Q2_C R5_P D5_N 0 BC858C
 Q5 0 R6_N Q5_E 0 BD139
 G1 V1_P G1_N R2_N 0 1
-E1 E1_P 0 R2_P 0 100k
 Q7 V2_P Q10_E 0 0 BC548B
+E1 E1_P 0 R2_P 0 100k
 C1 R2_N 0 2.2n  
-C2 D1_N 0 1u  
+C2 D5_N D9_P 1u  
 C3 D4_N 0 1u  
 V$IPROBE1 Q1_E V2_N 0.0 
 .GRAPH IPROBE1#p CurveLabel=IPROBE1
 .GRAPH E1_P curveLabel="V3-pos" nowarn=true ylog=auto xlog=auto
-.GRAPH D6_N curveLabel="D2-cathode" nowarn=true ylog=auto xlog=auto
+.GRAPH R9#P curveLabel="I(R9-P)" nowarn=true
+E$Probe3$TP_DIFFPRB 1 0 D5_N D9_P 1 
+.graph 1 Curvelabel = "Diff Probe" nowarn=true yunit="V"
 .GRAPH V2_P curveLabel="Q9-collector" nowarn=true ylog=auto xlog=auto
 .TRAN 200u
 

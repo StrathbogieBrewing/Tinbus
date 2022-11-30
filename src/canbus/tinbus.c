@@ -24,37 +24,6 @@ char *tinbus_dump(const tinbus_frame_t *frame, char *dest) {
     return out;
 }
 
-// if (frame->bit_count == 0) {
-//     string[0] = '\0';
-//     return string;
-// }
-// char *out = string;
-// uint8_t bits = frame->bit_count;
-// uint8_t bytes = frame->bit_count >> 3u;
-
-// uint8_t byte = 0;
-// uint8_t bit_mask = 1 << frame->bit_count & 0b111;
-
-// while (bits) {
-//     bits--;
-//     if (frame->data[byte] & (1 << bit)) {
-//         *out++ = '1';
-//     } else {
-//         *out++ = '0';
-//     }
-// }
-
-// while (i) {
-//     if (i & code) {
-//         *buf++ = '1';
-//     } else {
-//         *buf++ = '0';
-//     }
-//     i >>= 1;
-// }
-// *buf = '\0';
-// return buf;
-// }
 
 // bool frame_push_bit(tinbus_frame_t *frame, bool bit){
 //     if(frame->bit_count >= FRAME_BUFFER_SIZE << 3u){

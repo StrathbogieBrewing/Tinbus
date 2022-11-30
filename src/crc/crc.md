@@ -1,7 +1,13 @@
 # CRC Selection
 
-Tinbus will use very small frames and so an 8 bit CRC is used to provide useful data error detection without significant payload or compuational overhead.
+Tinbus uses a 16 bit CRC to provide frame error detection. For a maximum frame size of up to 135 bits a Hamming Distance of 6 can be achieved with the following polynomial (aka CRC-16-DNP)
 
-It is invisaged that the payload will normally be less than 16 bytes (128 bits) and so a good choice of CRC would be polynomial C2, with value 0x97 (x^8 +x^5 +x^3 +x^2 + x + 1).
+0x3D65 = x^16^ + x^13^ + x^12^ + x^11^ + x^10^ + x^8^ + x^6^ + x^5^ + x^2^ +1
 
-PyCRC can be used to generate the appropriate c code for the polynomial. Algorithmic or look up table based CRC calculation is choosen based on the particular application.
+The payload will normally be less than 15 bytes (120 bits).
+
+PyCRC can be used to generate the appropriate c code for any polynomial. The use of algorithmic or look up table based CRC calculation is based on the particular application.
+
+Also see
+
+http://blog.martincowen.me.uk/clearing-up-crc-terminology-and-representations-of-polynomials.html
