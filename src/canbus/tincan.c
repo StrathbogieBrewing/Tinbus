@@ -1,7 +1,9 @@
 #include <assert.h>
 #include <stdio.h>
 
-#include "frame.h"
+#include "tincan.h"
+
+#define TINCAN_HEADER_BYTES (5)
 
 // Order of bits is maintained to be compatible with can bus behaviour
 // padding is used to align byte boundaries of data
@@ -14,13 +16,13 @@
 // Data length code (DLC)            4 bits    Number of bytes of data
 // Data field                        0–64 bits (0-8 bytes) Data bytes
 
-frame_error_t frame_enframe(const canbus_message_t *can, tinbus_frame_t *tin) {
+tincan_error_t tincan_enframe(const canbus_message_t *can, tinbus_frame_t *tin) {
     if (can->ide == false) {
         // currently only support extended frames
-        return FRAME_ERROR;
+        return TINCAN_ERROR;
     }
     if (can->dlc > 8) {
-        return FRAME_ERROR;
+        return TINCAN_ERROR;
     }
     uint32_t id = can->id << 2;
     tin->buffer[3] = id | (can->rtr ? 0b10 : 0b0);
@@ -34,24 +36,23 @@ frame_error_t frame_enframe(const canbus_message_t *can, tinbus_frame_t *tin) {
     tin->buffer[0] = id;
     uint8_t dlc = can->dlc;
     tin->buffer[4] = dlc;
-    tin->bit_count = 5 * 8;
+    tin->bit_count = (TINCAN_HEADER_BYTES + dlc) * TINBUS_BITS_IN_BYTE;
     while (dlc) {
         dlc--;
-        tin->buffer[5 + dlc] = can->data[dlc];
-        tin->bit_count += 8;
+        tin->buffer[TINCAN_HEADER_BYTES + dlc] = can->data[dlc];
     }
-    return FRAME_OK;
+    return TINCAN_OK;
 }
 
-frame_error_t frame_deframe(const tinbus_frame_t *tin, canbus_message_t *can) {
+tincan_error_t tincan_deframe(const tinbus_frame_t *tin, canbus_message_t *can) {
     can->ide = tin->buffer[1] & 0b00010000;
     if (can->ide == false) {
         // currently only support extended frames
-        return FRAME_ERROR;
+        return TINCAN_ERROR;
     }
     can->dlc = tin->buffer[4];
     if (can->dlc > 8) {
-        return FRAME_ERROR;
+        return TINCAN_ERROR;
     }
     uint32_t id = tin->buffer[0];
     id <<= 8;
@@ -68,7 +69,7 @@ frame_error_t frame_deframe(const tinbus_frame_t *tin, canbus_message_t *can) {
     uint8_t dlc = can->dlc;
     while (dlc) {
         dlc--;
-        can->data[dlc] = tin->buffer[5 + dlc];
+        can->data[dlc] = tin->buffer[TINCAN_HEADER_BYTES + dlc];
     }
-    return FRAME_OK;
+    return TINCAN_OK;
 }

@@ -3,15 +3,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "frame.h"
-
-void dump_message(const canbus_message_t *msg) {
-    printf("Decoded frame ID : %8.8X  DLC : %d  IDE : %d  RTR : %d  DATA : ", msg->id, msg->dlc, msg->ide, msg->rtr);
-    for (int i = 0; i < msg->dlc; i++) {
-        printf("%2.2X ", msg->data[i]);
-    }
-    printf("\n");
-}
+#include "tincan.h"
+#include "slcan.h"
 
 static const canbus_message_t test_vectors[] = {
     {.id = 0x12345678, .ide = true, .rtr = true, .dlc = 0, .data = {0x00}},
@@ -21,16 +14,23 @@ static const canbus_message_t test_vectors[] = {
 int main(int argc, char *argv[]) {
     int vectors = sizeof(test_vectors) / sizeof(canbus_message_t);
     for (int i = 0; i < vectors; i++) {
-        dump_message(&test_vectors[i]);
+        canbus_dump(&test_vectors[i]);
         tinbus_frame_t tin_frame;
-        assert(frame_enframe(&test_vectors[i], &tin_frame) == FRAME_OK);
+        assert(tincan_enframe(&test_vectors[i], &tin_frame) == TINCAN_OK);
         char dump[(TINBUS_BUFFER_SIZE * TINBUS_BITS_IN_BYTE) + 1];
         tinbus_dump(&tin_frame, dump);
-        printf("Encoded frame >%s<\n", dump);
+        printf("Frame --> BITS : %s\n", dump);
         canbus_message_t can_msg_test;
-        frame_deframe(&tin_frame, &can_msg_test);
-        dump_message(&can_msg_test);
+        tincan_deframe(&tin_frame, &can_msg_test);
+        canbus_dump(&can_msg_test);
         assert(memcmp(&can_msg_test, &test_vectors[i], sizeof(canbus_message_t)) == 0);
+
+slcan_frame_t slcan;
+slcan_error_t error = slcan_enframe(&can_msg_test, &slcan);
+slcan.buffer[slcan.size] = '\0';
+printf("slcan -->     : %d %s\n", slcan.size, slcan.buffer);
+
+        printf("Test passed\n\n");
     }
     return EXIT_SUCCESS;
 }

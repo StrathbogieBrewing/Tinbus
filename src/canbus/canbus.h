@@ -12,4 +12,6 @@ typedef struct {
   uint8_t data[8];
 } canbus_message_t;
 
+void canbus_dump(const canbus_message_t *message);
+
 #endif // CANBUS_H
