@@ -6,7 +6,7 @@
 #define TINCAN_HEADER_BYTES (5)
 
 // Order of bits is maintained to be compatible with can bus behaviour
-// padding is used to align byte boundaries of data
+// padding is used to align byte boundaries of data field
 // Identifier A                      11 bits   First part of ID (b18 to b28 in extended)
 // Identifier Extension Bit (IDE)    1 bit     Recessive (1) for extended frames
 // Identifier B                      18        Second part of ID (b0 to b17 in extended)

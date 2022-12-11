@@ -21,7 +21,7 @@ typedef enum slcan__error_t {
     SLCAN_ERROR,
 } slcan_error_t;
 
-slcan_error_t slcan_enframe(const canbus_message_t *can, slcan_frame_t *slcan);
-slcan_error_t slcan_deframe(const slcan_frame_t *slcan, canbus_message_t *can);
+slcan_error_t slcan_enframe(slcan_frame_t *slcan, const canbus_message_t *can);
+slcan_error_t slcan_deframe(canbus_message_t *can, const slcan_frame_t *slcan);
 
 #endif // SLCAN_H

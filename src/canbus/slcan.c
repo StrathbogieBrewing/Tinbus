@@ -1,30 +1,7 @@
 #include "slcan.h"
-#include <assert.h>
+#include "hex.h"
 
-#define SLCAN_MAX_HEX_CHARACTERS (8)
-
-static uint8_t slcan_bin2hex(uint8_t bin) {
-    bin &= 0x0F;
-    if (bin < 10) {
-        return bin + '0';
-    } else {
-        return bin + 'A' - 10;
-    }
-}
-
-void slcan_hexify(slcan_frame_t *slcan, uint8_t char_count, uint32_t value) {
-    assert(slcan->size + char_count < SLCAN_BUFFER_SIZE);
-    assert(char_count <= SLCAN_MAX_HEX_CHARACTERS);
-    uint8_t chars = char_count;
-    while (chars) {
-        chars--;
-        slcan->buffer[slcan->size + chars] = slcan_bin2hex((uint8_t)value);
-        value >>= 4;
-    }
-    slcan->size += char_count;
-}
-
-slcan_error_t slcan_enframe(const canbus_message_t *can, slcan_frame_t *slcan) {
+slcan_error_t slcan_enframe(slcan_frame_t *slcan, const canbus_message_t *can) {
     if (can->dlc > 8) {
         return SLCAN_INVALID_DLC;
     }
@@ -37,8 +14,8 @@ slcan_error_t slcan_enframe(const canbus_message_t *can, slcan_frame_t *slcan) {
         } else {
             slcan->buffer[0] = 'T';
         }
-        slcan->size = 1;
-        slcan_hexify(slcan, 8, can->id);
+        hex_from_u32(&slcan->buffer[1], 8, can->id);
+        slcan->size = 9;
     } else {
         if (can->id > 0x07FF) {
             return SLCAN_INVALID_ID;
@@ -48,28 +25,29 @@ slcan_error_t slcan_enframe(const canbus_message_t *can, slcan_frame_t *slcan) {
         } else {
             slcan->buffer[0] = 't';
         }
-        slcan->size = 1;
-        slcan_hexify(slcan, 3, can->id);
+        hex_from_u32(&slcan->buffer[1], 3, can->id);
+        slcan->size = 4;
     }
-
-    slcan_hexify(slcan, 1, can->dlc);
-
-    uint8_t index = 0;
-    while (index < can->dlc) {
-        slcan_hexify(slcan, 2, can->data[index]);
-        index++;
+    slcan->buffer[slcan->size] = hex_from_u4(can->dlc).value;
+    slcan->size += 1;
+    for (uint8_t can_index = 0; can_index < can->dlc; can_index++) {
+        hex_from_u8(&slcan->buffer[slcan->size], 2, can->data[can_index]);
+        slcan->size += 2;
     }
-
     slcan->buffer[slcan->size] = '\r'; // normal Lawicel line termination
-    slcan->size++;
+    slcan->size += 1;
+    return SLCAN_OK;
 }
 
-slcan_error_t slcan_deframe(const slcan_frame_t *slcan, canbus_message_t *can) {
-
+slcan_error_t slcan_deframe(canbus_message_t *can, const slcan_frame_t *slcan) {
+    uint8_t slcan_index = 0;
     if ((slcan->buffer[0] == 'T') || (slcan->buffer[0] == 'R')) {
-        if (slcan_unhexify(slcan, 8, &can->id) != true) {
+        hex_u32_result_t u32 = hex_to_u32(&slcan->buffer[1], 8);
+        if (u32.error) {
             return SLCAN_ERROR;
         }
+        can->id = u32.value;
+        slcan_index = 9;
         can->ide = true;
         if (slcan->buffer[0] == 'R') {
             can->rtr = true;
@@ -77,9 +55,12 @@ slcan_error_t slcan_deframe(const slcan_frame_t *slcan, canbus_message_t *can) {
             can->rtr = false;
         }
     } else if ((slcan->buffer[0] == 't') || (slcan->buffer[0] == 'r')) {
-        if (slcan_unhexify(slcan, 3, &can->id) != true) {
+        hex_u32_result_t u32 = hex_to_u32(&slcan->buffer[1], 3);
+        if (u32.error) {
             return SLCAN_ERROR;
         }
+        can->id = u32.value;
+        slcan_index = 4;
         can->ide = false;
         if (slcan->buffer[0] == 'r') {
             can->rtr = true;
@@ -89,23 +70,27 @@ slcan_error_t slcan_deframe(const slcan_frame_t *slcan, canbus_message_t *can) {
     } else {
         return SLCAN_NOT_DATA;
     }
-
-    uint32_t dlc;
-    if (slcan_unhexify(slcan, 1, &dlc) != true) {
+    hex_u8_result_t u4 = hex_to_u4(slcan->buffer[slcan_index]);
+    slcan_index += 1;
+    if (u4.error) {
         return SLCAN_ERROR;
     }
-    can->dlc = dlc;
-
-    uint8_t index = 0;
-    while (index < can->dlc) {
-        uint32_t data;
-        if (slcan_unhexify(slcan, 2, &data) != true) {
+    can->dlc = u4.value;
+    for (uint8_t can_index = 0; can_index < can->dlc; can_index++) {
+        hex_u8_result_t u8 = hex_to_u8(&slcan->buffer[slcan_index], 2);
+        if (u8.error) {
             return SLCAN_ERROR;
         }
-        can->data[index] = data;
-        index++;
+        can->data[can_index] = u8.value;
+        slcan_index += 2;
     }
+    if (slcan->buffer[slcan_index] != '\r') {
+        return SLCAN_ERROR;
+    }
+    return SLCAN_OK;
 }
+
+
 
 // switch (uart_in[0]) {
 // case 'T':

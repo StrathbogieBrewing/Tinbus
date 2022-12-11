@@ -11,6 +11,8 @@ static const canbus_message_t test_vectors[] = {
     {.id = 0x1fffffff, .ide = true, .rtr = false, .dlc = 4, .data = {0x12, 0x34, 0x56, 0x78}},
     {.id = 0x0, .ide = true, .rtr = false, .dlc = 8, .data = {0x12, 0x34, 0x56, 0x78, 0x9a, 0xbc, 0xde, 0xf0}}};
 
+int hex_wrapper(void);
+
 int main(int argc, char *argv[]) {
     int vectors = sizeof(test_vectors) / sizeof(canbus_message_t);
     for (int i = 0; i < vectors; i++) {
@@ -24,11 +26,21 @@ int main(int argc, char *argv[]) {
         tincan_deframe(&tin_frame, &can_msg_test);
         canbus_dump(&can_msg_test);
         assert(memcmp(&can_msg_test, &test_vectors[i], sizeof(canbus_message_t)) == 0);
+        // UNIT_TEST((memcmp(&can_msg_test, &test_vectors[i], sizeof(canbus_message_t)) == 0));
+        printf("Line : %d\n", hex_wrapper());
+
 
 slcan_frame_t slcan;
-slcan_error_t error = slcan_enframe(&can_msg_test, &slcan);
+// slcan_error_t error = 
+slcan_enframe(&slcan, &can_msg_test);
 slcan.buffer[slcan.size] = '\0';
 printf("slcan -->     : %d %s\n", slcan.size, slcan.buffer);
+
+canbus_message_t slcan_msg;
+slcan_deframe(&slcan_msg, &slcan);
+canbus_dump(&slcan_msg);
+
+
 
         printf("Test passed\n\n");
     }
