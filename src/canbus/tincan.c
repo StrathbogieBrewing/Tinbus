@@ -1,5 +1,7 @@
-#include <assert.h>
-#include <stdio.h>
+// #include <assert.h>
+// #include <stdio.h>
+
+#include "ctest.h"
 
 #include "tincan.h"
 
@@ -16,7 +18,7 @@
 // Data length code (DLC)            4 bits    Number of bytes of data
 // Data field                        0–64 bits (0-8 bytes) Data bytes
 
-tincan_error_t tincan_enframe(const canbus_message_t *can, tinbus_frame_t *tin) {
+tincan_error_t tincan_enframe(tinbus_frame_t *tin, const canbus_message_t *can) {
     if (can->ide == false) {
         // currently only support extended frames
         return TINCAN_ERROR;
@@ -36,15 +38,15 @@ tincan_error_t tincan_enframe(const canbus_message_t *can, tinbus_frame_t *tin) 
     tin->buffer[0] = id;
     uint8_t dlc = can->dlc;
     tin->buffer[4] = dlc;
-    tin->bit_count = (TINCAN_HEADER_BYTES + dlc) * TINBUS_BITS_IN_BYTE;
+    tin->length = dlc + TINCAN_HEADER_BYTES;
     while (dlc) {
         dlc--;
-        tin->buffer[TINCAN_HEADER_BYTES + dlc] = can->data[dlc];
+        tin->buffer[dlc + TINCAN_HEADER_BYTES] = can->data[dlc];
     }
     return TINCAN_OK;
 }
 
-tincan_error_t tincan_deframe(const tinbus_frame_t *tin, canbus_message_t *can) {
+tincan_error_t tincan_deframe(canbus_message_t *can, const tinbus_frame_t *tin) {
     can->ide = tin->buffer[1] & 0b00010000;
     if (can->ide == false) {
         // currently only support extended frames
@@ -72,4 +74,32 @@ tincan_error_t tincan_deframe(const tinbus_frame_t *tin, canbus_message_t *can) 
         can->data[dlc] = tin->buffer[TINCAN_HEADER_BYTES + dlc];
     }
     return TINCAN_OK;
+}
+
+CTEST_FUNCTION(tincan_tests) {
+    inline bool tincan_test(const canbus_message_t *test_message) {
+        tinbus_frame_t tinbus_frame;
+        if (tincan_enframe(&tinbus_frame, test_message) != TINCAN_OK) {
+            return false;
+        }
+        canbus_message_t canned_message;
+        if (tincan_deframe(&canned_message, &tinbus_frame) != TINCAN_OK) {
+            return false;
+        }
+        uint8_t *test = (uint8_t *)test_message;
+        uint8_t *result = (uint8_t *)&canned_message;
+        for (int i = 0; i < TINCAN_HEADER_BYTES + test_message->dlc; i++) {
+            if (*test++ != *result++) {
+                return false;
+            }
+        }
+        return true;
+    };
+
+    CTEST_ASSERT(
+        tincan_test(&(const canbus_message_t){.id = 0x12345678, .ide = true, .rtr = true, .dlc = 0, .data = {0x00}}));
+    CTEST_ASSERT(tincan_test(&(const canbus_message_t){
+        .id = 0x1fffffff, .ide = true, .rtr = false, .dlc = 4, .data = {0x12, 0x34, 0x56, 0x78}}));
+    CTEST_ASSERT(tincan_test(&(const canbus_message_t){
+        .id = 0x0, .ide = true, .rtr = false, .dlc = 8, .data = {0x12, 0x34, 0x56, 0x78, 0x9a, 0xbc, 0xde, 0xf0}}));
 }

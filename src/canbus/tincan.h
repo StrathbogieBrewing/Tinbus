@@ -9,8 +9,8 @@ typedef enum tincan_error_t {
     TINCAN_ERROR,
 } tincan_error_t;
 
-tincan_error_t tincan_enframe(const canbus_message_t *can, tinbus_frame_t * tin);
-tincan_error_t tincan_deframe(const tinbus_frame_t * tin, canbus_message_t *can);
+tincan_error_t tincan_enframe(tinbus_frame_t *tin, const canbus_message_t *can);
+tincan_error_t tincan_deframe(canbus_message_t *can, const tinbus_frame_t *tin);
 
 #endif // TINCAN_H
 

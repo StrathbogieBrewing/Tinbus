@@ -1,5 +1,5 @@
-#include "ctest.h"
 #include "hex.h"
+#include "ctest.h"
 
 hex_u8_result_t hex_from_u4(uint8_t u4) {
     hex_u8_result_t result = {.error = false, .value = 0u};
@@ -71,11 +71,15 @@ hex_u32_result_t hex_to_u32(const uint8_t *hex, uint8_t size) {
     return result;
 }
 
-ctest_function(hex) {
-    ctest_assert(hex_to_u4('x').error);
-    for (uint8_t i = '0' ; i <= '9' ; i++){
-        ctest_assert((hex_to_u4(i).value == i - '0'));
+CTEST_FUNCTION(hex_tests) {
+    CTEST_ASSERT(hex_to_u4('x').error);
+    for (uint8_t i = '0'; i <= '9'; i++) {
+        CTEST_ASSERT(hex_to_u4(i).value == i - '0');
     }
-    ctest_assert((hex_to_u4('a').value == 11));
-    ctest_assert((hex_to_u4('a').value == 10));
+    CTEST_ASSERT(hex_to_u4('a').value == 10);
+    CTEST_ASSERT(hex_to_u32((const uint8_t *)"FFFF", 4).value == 65535);
+}
+
+CTEST_FUNCTION(hex_tests_fail) {
+    CTEST_ASSERT(hex_to_u4('a').value == 11);
 }

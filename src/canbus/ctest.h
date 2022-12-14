@@ -1,22 +1,18 @@
 #ifndef CTEST_H
 #define CTEST_H
+    void ctest_result(const char* name, int line); 
     #ifdef CTEST_ENABLED
         #define CTEST_DO_STRINGIFY(x) #x
         #define CTEST_STRINGIFY(s) CTEST_DO_STRINGIFY(s)
-        #define ctest_run(function) do { \
-            int ctest_##function##_unit_test(void); \
-            int line = ctest_##function##_unit_test(); \
-            if(line != 0) CTEST_ERROR(CTEST_STRINGIFY(function), line); } while(0)
-        #define ctest_function(function) \
-            static int line = 0; \
-            static inline void ctest_##function##_function(int *line); \
-            int ctest_##function##_unit_test(void) { ctest_##function##_function(&line); return line; } \
-            static inline void ctest_##function##_function(int *line)
-        #define ctest_assert(assertion) do { if (!assertion) { *line = __LINE__; return; } } while (0)
+        #define CTEST_RUN(function) do { \
+            void ctest_##function##_unit_test(const char* name); \
+            ctest_##function##_unit_test(CTEST_STRINGIFY(function)); } while (0)
+        #define CTEST_FUNCTION(function) \
+            void ctest_##function##_unit_test(const char* name)
+        #define CTEST_ASSERT(assertion) do { if (assertion) ctest_result(name, __LINE__); else ctest_result(name, -(__LINE__));  } while (0)
     #else   // CTEST_ENABLED
-        #define ctest_run(function)
-        #define ctest_function(function) static inline void ctest_##function##_function(int *line)
-        #define ctest_assert(assertion)
+        #define CTEST_RUN(function)
+        #define CTEST_FUNCTION(function) static inline void ctest_##function##_unit_test(const char* name)
+        #define CTEST_ASSERT(assertion)
     #endif  // CTEST_ENABLED
-
 #endif  // CTEST_H
