@@ -25,7 +25,7 @@ int main(int argc, char *argv[]) {
     tinbus_frame_t tin;
     tincan_enframe(&tin, &can_msg_test);
     tinbus_dump_t dump;
-    tinbus_dump(dump, &tin);
+    tinbus_dump(&dump, &tin);
     printf("tinbus -->     :   %d   %s\n", tin.length, dump);
 
     slcan_frame_t slcan;
