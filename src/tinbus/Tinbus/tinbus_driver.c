@@ -38,7 +38,7 @@ void tinbus_receive_edge_cb(uint16_t time_us) {}
 
 // #define PULSE_LENGTH_US (20)
 
-#define TINBUS_PERIOD_TICKS (10 * 16)
+#define TINBUS_PERIOD_TICKS (20 * 16)
 
 #define INPUT_CAPTURE_PIN 8     // receive
 #define OUTPUT_COMPARE_A_PIN 9  // transmit
@@ -53,12 +53,19 @@ void tinbus_receive_edge_cb(uint16_t time_us) {}
 
 #define IS_MATCH_SET_ENABLED() (TCCR1A & (1 << COM1A0))
 #define CONFIG_MATCH_SET() (TCCR1A = TCCR1A | ((1 << COM1A1) | (1 << COM1A0)))
-#define CONFIG_CAPTURE_FALLING_EDGE() (TCCR1B &= ~(1 << ICES1))
+#define SET_CAPTURE_FALLING_EDGE() (TCCR1B &= ~(1 << ICES1))
 #define CONFIG_CAPTURE_RISING_EDGE() (TCCR1B |= (1 << ICES1))
-#define ENABLE_INT_INPUT_CAPTURE() (TCCR1B |= (1 << ICNC1), TIFR1 |= (1 << ICF1), TIMSK1 |= (1 << ICIE1))
+#define ENABLE_CAPTURE_INTERRUPT() (TCCR1B |= (1 << ICNC1), TIFR1 |= (1 << ICF1), TIMSK1 |= (1 << ICIE1))
 #define ENABLE_COMPARE_A_INTERRUPT() (TIFR1 = (1 << OCF1A), TIMSK1 |= (1 << OCIE1A))
 #define ENABLE_COMPARE_B_INTERRUPT() (TIFR1 = (1 << OCF1B), TIMSK1 |= (1 << OCIE1B))
+
+#define ENABLE_COMPARE_A_OUTPUT() (DDRB |= (1 << PORTB1), PORTB |= (1 << PORTB1))
+#define DISABLE_COMPARE_A_OUTPUT() (DDRB &= ~(1 << PORTB1), PORTB |= (1 << PORTB1))
+
+
+#define IS_COMPARE_A_INTERRUPT_ENABLED() (TIMSK1 & (1 << OCIE1A)
 #define IS_COMPARE_B_INTERRUPT_ENABLED() (TIMSK1 & (1 << OCIE1B)
+
 #define DISABLE_CAPTURE_INTERRUPT() (TIMSK1 &= ~(1 << ICIE1))
 #define DISABLE_COMPARE_A_INTERRUPT() (TIMSK1 &= ~(1 << OCIE1A))
 #define DISABLE_COMPARE_B_INTERRUPT() (TIMSK1 &= ~(1 << OCIE1B))
@@ -75,34 +82,36 @@ void tinbus_receive_edge_cb(uint16_t time_us) {}
 #define COMPARE_B_INTERRUPT TIMER1_COMPB_vect
 
 static volatile uint16_t capture = 0;
-static tinbus_frame_t tx_frame = {0};
-static volatile uint8_t tx_index = 0;
-static volatile uint8_t tx_bit_mask = 0;
+static tinbus_frame_t tinbus_tx_frame = {0};
+static volatile uint8_t tinbus_tx_index = 0;
+static volatile uint8_t tinbus_tx_bit_mask = 0;
+
+typedef enum {
+    TINBUS_TX_IDLE = 0,
+    TINBUS_TX_PULSE_SENT,
+    TINBUS_TX_PULSE_RECEIVED,
+} tinbus_tx_state_t;
+
+static volatile tinbus_tx_state_t tinbus_tx_state = TINBUS_TX_IDLE;
 
 static tinbus_callback_t tinbus_callback = 0;
-
-// ISR(CAPTURE_INTERRUPT) { // for receiving leading edge of pulse
-//     ENABLE_COMPARE_B_INTERRUPT();
-//     DISABLE_CAPTURE_INTERRUPT();
-
-//     capture = GET_CAPTURE_COUNT();
-//     SET_COMPARE_B(capture + TINBUS_PERIOD_TICKS);
-// }
 
 ISR(COMPARE_A_INTERRUPT) {
     if (IS_MATCH_SET_ENABLED()) {
         // trailing edge, set up next bit
-        if (tx_index != tx_frame.length) {
-            if ((tx_bit_mask & tx_frame.buffer[tx_index]) != 0) {
+        if (tinbus_tx_index != tinbus_tx_frame.length) {
+            if ((tinbus_tx_bit_mask & tinbus_tx_frame.buffer[tinbus_tx_index]) != 0) {
                 SET_COMPARE_A(GET_COMPARE_A() + TINBUS_PERIOD_TICKS * 5);
             } else {
                 SET_COMPARE_A(GET_COMPARE_A() + TINBUS_PERIOD_TICKS * 2);
             }
             CONFIG_MATCH_CLEAR();
-            tx_bit_mask >>= 1;
-            if (tx_bit_mask == 0) {
-                tx_bit_mask = 0b10000000;
-                tx_index += 1;
+            ENABLE_COMPARE_A_OUTPUT();
+            tinbus_tx_state = TINBUS_TX_PULSE_SENT;
+            tinbus_tx_bit_mask >>= 1;
+            if (tinbus_tx_bit_mask == 0) {
+                tinbus_tx_bit_mask = 0b10000000;
+                tinbus_tx_index += 1;
             }
         } else {
             SET_COMPARE_A(GET_COMPARE_A() + TINBUS_PERIOD_TICKS);
@@ -118,68 +127,84 @@ ISR(COMPARE_A_INTERRUPT) {
     }
 }
 
-// ISR(COMPARE_B_INTERRUPT) {
-//     ENABLE_INT_INPUT_CAPTURE();
-//     if (GET_COMPARE_B() == capture + TINBUS_PERIOD_TICKS) {
-//         // capture blanking timeout
-//         SET_COMPARE_B(capture + TINBUS_PERIOD_TICKS * 8);
-//     } else {
-//         // receive frame break timeout
-//         DISABLE_COMPARE_B_INTERRUPT();
-//     }
-// }
+ISR(CAPTURE_INTERRUPT) { // for receiving leading edge of pulse
+    PINB |= (1 << PORTB2);
 
-// schedule a transmit pulse at time_us from the last event
-// bool tinbus_transmit_pulse(void) {
+    capture = GET_CAPTURE_COUNT();
+    SET_COMPARE_B(capture + TINBUS_PERIOD_TICKS);
+    DISABLE_CAPTURE_INTERRUPT();
+    ENABLE_COMPARE_B_INTERRUPT();
 
-//     noInterrupts();
-//     PORTB |= (1 << PORTB2);
+    if (tinbus_tx_state == TINBUS_TX_PULSE_RECEIVED) {
+        // abort - detected another transmitter
+        tinbus_tx_state = TINBUS_TX_IDLE;
+        SET_COMPARE_A(GET_COMPARE_A() + TINBUS_PERIOD_TICKS);
+        CONFIG_MATCH_SET();
+        DISABLE_COMPARE_A_INTERRUPT();
+        DISABLE_COMPARE_A_OUTPUT();
+        // tx collision call back
+        tinbus_callback(TINBUS_TX_COLLISION);
+    }
+    if (tinbus_tx_state == TINBUS_TX_PULSE_SENT) {
+        tinbus_tx_state = TINBUS_TX_PULSE_RECEIVED;
+    }
 
-//     uint16_t time_now = GET_TIMER_COUNT();
-//     CONFIG_MATCH_CLEAR();
-//     SET_COMPARE_A(time_now + 2);
-//     // while (GET_TIMER_COUNT() <= GET_COMPARE_A())
-//     //     ;
-//     // CONFIG_MATCH_SET();
-//     // SET_COMPARE_A(time_now + 2 + TINBUS_PERIOD_TICKS);
+    PORTB &= ~(1 << PORTB2);
+}
 
-//     // CLEAR_CAPTURE_FLAG();
+ISR(COMPARE_B_INTERRUPT) {
 
-//     PORTB &= ~(1 << PORTB2);
-//     interrupts();
+    // DISABLE_COMPARE_A_OUTPUT();
 
-//     return true;
-// }
+    if (GET_COMPARE_B() == capture + TINBUS_PERIOD_TICKS) {
+        // capture blanking timeout
+        SET_COMPARE_B(capture + (TINBUS_PERIOD_TICKS * 8));
+    } else {
+        // receive frame break timeout
+        PINB |= (1 << PORTB2);
+        DISABLE_COMPARE_B_INTERRUPT();
+        tinbus_callback(TINBUS_RX_COMPLETE);
+        PORTB &= ~(1 << PORTB2);
+    }
+
+    ENABLE_CAPTURE_INTERRUPT();
+}
 
 void tinbus_init(tinbus_callback_t callback) {
+DDRB |= (1 << PORTB2); // debug output enable
+
     tinbus_callback = callback;
 
-    DDRB |= (1 << PORTB1);
-    DDRB |= (1 << PORTB2); // debug output
-
     CONFIG_TIMER_NOPRESCALE();
+
+    DISABLE_COMPARE_A_OUTPUT();
     ENABLE_COMPARE_A_INTERRUPT();
 
-    // ENABLE_INT_INPUT_CAPTURE();
-    // CONFIG_CAPTURE_FALLING_EDGE();
+    // ENABLE_COMPARE_B_INTERRUPT();
+    ENABLE_CAPTURE_INTERRUPT();
+    SET_CAPTURE_FALLING_EDGE();
 }
 
 // uint8_t tinbus_read(tinbus_frame_t *frame) {}
 
 uint8_t tinbus_write(tinbus_frame_t *frame) {
-    PINB |= (1 << PORTB2);
+    // PINB |= (1 << PORTB2);
 
-    memcpy(&tx_frame, frame, sizeof(tinbus_frame_t));
-    tx_index = 0;
-    tx_bit_mask = 0b10000000;
+    if(IS_COMPARE_A_INTERRUPT_ENABLED()){
+        return TINBUS_TX_BUSY;
+    }
 
-    cli();
+    memcpy(&tinbus_tx_frame, frame, sizeof(tinbus_frame_t));
+    tinbus_tx_index = 0;
+    tinbus_tx_bit_mask = 0b10000000;
+    tinbus_tx_state = TINBUS_TX_IDLE;
+
+    ENABLE_COMPARE_A_OUTPUT();
     CONFIG_MATCH_CLEAR();
     SET_COMPARE_A(GET_TIMER_COUNT() + 16);
     ENABLE_COMPARE_A_INTERRUPT();
-    sei();
-    
-    PORTB &= ~(1 << PORTB2);
 
-    return 0;
+    // PORTB &= ~(1 << PORTB2);
+
+    return TINBUS_OK;
 }

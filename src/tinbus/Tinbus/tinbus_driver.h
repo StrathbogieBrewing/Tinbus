@@ -19,6 +19,9 @@ typedef  enum {
     TINBUS_OK = 0,
     TINBUS_TX_BUSY,
     TINBUS_TX_COMPLETE,
+    TINBUS_TX_COLLISION,
+
+    TINBUS_RX_COMPLETE,
 } tinbus_status_t;
 
 typedef char tinbus_dump_t[TINBUS_BUFFER_SIZE * (8 + 1)];
