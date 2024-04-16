@@ -16,6 +16,8 @@
         "typeindex": "cpp",
         "typeinfo": "cpp",
         "bitset": "c",
-        "buffer.h": "c"
+        "buffer.h": "c",
+        "mb_crc.h": "c",
+        "uart1.h": "c"
     }
 }

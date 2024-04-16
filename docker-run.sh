@@ -1,0 +1,1 @@
+docker run -ti --privileged -v /dev/:/dev/ -v $(pwd):/work registry.gitlab.com/plasmatronics/tester-avr-tools:v1.0.4
