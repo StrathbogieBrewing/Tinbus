@@ -21,7 +21,8 @@
 #define BIT_PERIOD_TICKS ((50UL * F_CPU) / 1000000UL)
 #define BUFFER_SIZE_MAX 32
 #define MASK 0x80
-#define CRC_ERROR_COUNT 0xFF
+#define CRC_ERROR_COUNT 0xF0
+#define FRAME_ERROR_COUNT 0xF1
 
 enum { RX_ZERO = 0, RX_ONE, RX_END };
 
@@ -53,30 +54,39 @@ void rx_data(uint8_t data) {
     static uint8_t index = 0;
     static uint16_t crc = 0xFFFF;
     static uint8_t crc_error_count = 0;
+    static uint8_t frame_error_count = 0;
     if (data == RX_END) {
         crc = mb_crc(crc, buffer[index]);
         uint8_t size = index + 1;
-        if (crc) {
+        if (mask != 0){
+            frame_error_count++;
+            crc = 0xFFFF;
+            buffer[0] = FRAME_ERROR_COUNT;  // send message with frame error count to indicate crc error
+            crc = mb_crc(crc, buffer[0]);
+            buffer[1] = frame_error_count;
+            crc = mb_crc(crc, buffer[1]);
+            buffer[2] = crc & 0xFF;
+            buffer[3] = crc >> 8;
+            size = 4;           
+        } else if (crc) {
             crc_error_count++;
             crc = 0xFFFF;
-            buffer[0] = CRC_ERROR_COUNT;  // send message with crc error count to indicate crc error
+            buffer[0] = CRC_ERROR_COUNT;    // send message with crc error count to indicate crc error
             crc = mb_crc(crc, buffer[0]);
             buffer[1] = crc_error_count;
             crc = mb_crc(crc, buffer[1]);
             buffer[2] = crc & 0xFF;
             buffer[3] = crc >> 8;
             size = 4;
-
-        } else {
-            size = cobsm_encode(buffer, size);  // encoding removes all zeros from data
-            // size = cobsm_decode(buffer, size);
-        }
+        } 
+        size = cobsm_encode(buffer, size);  // encoding removes all zeros from data
+        // size = cobsm_decode(buffer, size);
 
         uint8_t i = 0;
         while (i < size) {
-            putc(buffer[i++], stdout);
+            putc(buffer[i++], stdout);  // send all bytes in frame
         }
-        putc(0x00, stdout);  // mark end of frame with added zero
+        putc(0x00, stdout);             // mark end of frame with an added zero
 
         index = 0; // reset receiver buffer
         buffer[index] = 0;

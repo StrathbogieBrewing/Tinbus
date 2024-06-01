@@ -18,6 +18,8 @@
         "bitset": "c",
         "buffer.h": "c",
         "mb_crc.h": "c",
-        "uart1.h": "c"
+        "uart1.h": "c",
+        "mbcrc.h": "c",
+        "cobsm.h": "c"
     }
 }
