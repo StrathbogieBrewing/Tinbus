@@ -7,48 +7,80 @@
 </head>
 
 <body>
-    <h1>My first graphs</h1>
+    <h1>Time Series Data</h1>
 
     <div class="chart-container">
-        <div id="graphdiv1" class="chart"></div>
-        <div id="graphdiv2" class="chart"></div>
+        <div id="graphdiv1" class="chart" style="width:90%; height:400px;"></div>
+        <div id="graphdiv2" class="chart" style="width:90%;"></div>
     </div>
 
     <script type="text/javascript">
         Dygraph.onDOMready(function onDOMready() {
             g = new Dygraph(
                 document.getElementById("graphdiv1"),
-                "data.csv",
+                "test-20240602.csv",
                 {
-                    axis: {
+
+                    axes: {
                         x: {
-                            valueFormatter: Dygraph.dateString_,
-                            valueParser: function (x) { return 1000 *parseInt(x); },
-                            ticker: Dygraph.dateTicker
+                            valueFormatter: function (val, opts, series_name, dygraph) {
+                                return formatDate(val);
+                            },
+                            axisLabelFormatter: function (val, granularity, opts, dygraph) {
+                                return formatDate(val);
+                            }
                         }
                     },
-
                     connectSeparatedPoints: true,
                     drawPoints: true,
-                    // visibility: [true, false],
+                    visibility: [true, false],
+                }
+            );
+        });
 
+        Dygraph.onDOMready(function onDOMready() {
+            g = new Dygraph(
+                document.getElementById("graphdiv2"),
+                "test-20240602.csv",
+                {
+                    axes: {
+                        x: {
+                            valueFormatter: function (val, opts, series_name, dygraph) {
+                                return formatDate(val);
+                            },
+                            axisLabelFormatter: function (val, granularity, opts, dygraph) {
+                                return formatDate(val);
+                            }
+                        }
+                    },
+                    connectSeparatedPoints: true,
+                    drawPoints: true,
+                    visibility: [false, true]
                 }
 
             );
         });
 
-        // Dygraph.onDOMready(function onDOMready() {
-        //     g = new Dygraph(
-        //         document.getElementById("graphdiv2"),
-        //         "data.csv",
-        //         {
-        //             connectSeparatedPoints: true,
-        //             drawPoints: true,
-        //             visibility: [false, true]
-        //         }
 
-        //     );
-        // });
+
+        function zeropad(x) {
+            if (x < 10) return "0" + x; else return "" + x;
+        }
+
+        function formatDate(millisecs) {
+            var x = new Date(millisecs);
+            var hh = x.getUTCHours();
+            var mm = x.getUTCMinutes();
+            var ss = x.getUTCSeconds();
+            var ms = x.getUTCMilliseconds();
+            var ret = zeropad(hh) + ":" + zeropad(mm);
+            ret += ":" + zeropad(ss);
+            if (ms) {
+                var str = "" + ms;
+                ret += "." + ('000' + str).substring(str.length);
+            }
+            return ret
+        }
     </script>
 </body>
 
