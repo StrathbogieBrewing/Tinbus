@@ -2,6 +2,8 @@
 CMakeCache.txt
 cmake_install.cmake
 
+**/test.csv
+
 build
 
 **/PCB/History/**

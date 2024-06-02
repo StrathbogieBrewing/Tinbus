@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <script type="text/javascript" src="dygraph.min.js"></script>
+    <link rel="stylesheet" type="text/css" src="dygraph.css" />
+</head>
+
+<body>
+    <h1>My first graphs</h1>
+
+    <div class="chart-container">
+        <div id="graphdiv1" class="chart"></div>
+        <div id="graphdiv2" class="chart"></div>
+    </div>
+
+    <script type="text/javascript">
+        Dygraph.onDOMready(function onDOMready() {
+            g = new Dygraph(
+                document.getElementById("graphdiv1"),
+                "data.csv",
+                {
+                    axis: {
+                        x: {
+                            valueFormatter: Dygraph.dateString_,
+                            valueParser: function (x) { return 1000 *parseInt(x); },
+                            ticker: Dygraph.dateTicker
+                        }
+                    },
+
+                    connectSeparatedPoints: true,
+                    drawPoints: true,
+                    // visibility: [true, false],
+
+                }
+
+            );
+        });
+
+        // Dygraph.onDOMready(function onDOMready() {
+        //     g = new Dygraph(
+        //         document.getElementById("graphdiv2"),
+        //         "data.csv",
+        //         {
+        //             connectSeparatedPoints: true,
+        //             drawPoints: true,
+        //             visibility: [false, true]
+        //         }
+
+        //     );
+        // });
+    </script>
+</body>
+
+</html>

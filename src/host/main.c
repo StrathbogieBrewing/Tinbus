@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <sys/time.h>
 #include <signal.h>
+#include <unistd.h>
 
 #include "../cobsm/cobsm.h"
 #include "../crc/mbcrc.h"
@@ -24,7 +25,9 @@ uint32_t get_time_ms() {
 int main(int argc, char **argv) {
     uint8_t buffer[BUFFER_SIZE];
     uint16_t buffer_index = 0;
-    fprintf(stdout, "time_ms,current_ma,voltage_mv\n");
+    signal (SIGINT,intHandler);
+    FILE *fp = fopen("test.csv", "w");
+    fprintf(fp, "time_ms,current_ma,voltage_mv\n");
     while (keepRunning) {
         int ch = 0;
         ch = getchar();
@@ -37,10 +40,12 @@ int main(int argc, char **argv) {
                 int16_t value = (buffer[1] << 8) | buffer[2];
                 switch (id) {
                 case 0x01: // current
+                    fprintf(fp, "%d,%d,\n", get_time_ms(), (int)((float)value * 24.9));
                     fprintf(stdout, "%d,%d,\n", get_time_ms(), (int)((float)value * 24.9));
                     break;
                 case 0x02: // voltage
-                    fprintf(stdout, "%d,,%d\n", get_time_ms(), (int)((float)value * 2.482));
+                    fprintf(fp, "%d,,%d\n", get_time_ms(), (int)((float)value * 2.485));
+                    fprintf(stdout, "%d,,%d\n", get_time_ms(), (int)((float)value * 2.485));
                     break;
                 }
             }
@@ -53,5 +58,7 @@ int main(int argc, char **argv) {
             }
         }
     }
+    sleep(1); // wait for last frame to be processed
+    fclose(fp);
     return EXIT_SUCCESS;
 }
