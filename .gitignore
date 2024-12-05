@@ -4,6 +4,7 @@
 # Temporary files
 
 hardware/demo/lora/lora-backups
+phy/sim/design.out
 
 *.000
 *.bak
