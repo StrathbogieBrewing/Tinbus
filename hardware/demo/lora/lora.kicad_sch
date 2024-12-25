@@ -4795,16 +4795,6 @@
 	)
 	(wire
 		(pts
-			(xy 49.53 115.57) (xy 49.53 119.38)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "0f5f5637-4b58-4424-a0f3-d69b9ed2729c")
-	)
-	(wire
-		(pts
 			(xy 71.12 166.37) (xy 71.12 170.18)
 		)
 		(stroke
@@ -7207,7 +7197,7 @@
 			)
 		)
 	)
-	(global_label "V-SIN"
+	(global_label "VSIN"
 		(shape input)
 		(at 242.57 218.44 180)
 		(fields_autoplaced yes)
@@ -7219,7 +7209,7 @@
 		)
 		(uuid "2a73530c-d08d-45d1-a679-3e89f2fc75d7")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 233.779 218.44 0)
+			(at 235.3514 218.44 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -7295,7 +7285,7 @@
 			)
 		)
 	)
-	(global_label "V-CAP"
+	(global_label "VCAP"
 		(shape input)
 		(at 168.91 166.37 0)
 		(fields_autoplaced yes)
@@ -7307,7 +7297,7 @@
 		)
 		(uuid "3e7d0401-f130-4e5a-9cbd-879fe3ce4bb9")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 178.1848 166.37 0)
+			(at 176.6124 166.37 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -7339,7 +7329,7 @@
 			)
 		)
 	)
-	(global_label "V-SOUT"
+	(global_label "VSOUT"
 		(shape input)
 		(at 74.93 166.37 0)
 		(fields_autoplaced yes)
@@ -7351,7 +7341,7 @@
 		)
 		(uuid "53777660-41e5-44da-95bf-7d3bd0b4a469")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 85.4143 166.37 0)
+			(at 83.8419 166.37 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -7449,7 +7439,7 @@
 			)
 		)
 	)
-	(global_label "V-CAP"
+	(global_label "VCAP"
 		(shape input)
 		(at 242.57 198.12 180)
 		(fields_autoplaced yes)
@@ -7461,7 +7451,7 @@
 		)
 		(uuid "8c1c6c3a-8232-4aa6-8ff1-0f56ce13d553")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 233.2952 198.12 0)
+			(at 234.8676 198.12 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -7471,7 +7461,7 @@
 			)
 		)
 	)
-	(global_label "V-SIN"
+	(global_label "VSIN"
 		(shape input)
 		(at 100.33 166.37 0)
 		(fields_autoplaced yes)
@@ -7483,7 +7473,7 @@
 		)
 		(uuid "8f1fc79b-8947-4df5-b0f6-7b5407a53edc")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 109.121 166.37 0)
+			(at 107.5486 166.37 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -7559,6 +7549,28 @@
 			)
 		)
 	)
+	(global_label "VCAP"
+		(shape input)
+		(at 49.53 119.38 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "a786ba88-afdf-488b-83c6-f93e3a97b831")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 57.2324 119.38 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
 	(global_label "BOOT"
 		(shape input)
 		(at 295.91 170.18 90)
@@ -7603,7 +7615,7 @@
 			)
 		)
 	)
-	(global_label "V-SOUT"
+	(global_label "VSOUT"
 		(shape input)
 		(at 242.57 208.28 180)
 		(fields_autoplaced yes)
@@ -7615,7 +7627,7 @@
 		)
 		(uuid "c09cafa6-42b6-4620-b81e-38b6b21d4ce2")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 232.0857 208.28 0)
+			(at 233.6581 208.28 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -7713,7 +7725,7 @@
 			)
 		)
 	)
-	(global_label "BUS-VCAP"
+	(global_label "VCAP"
 		(shape input)
 		(at 212.09 146.05 0)
 		(fields_autoplaced yes)
@@ -7725,7 +7737,7 @@
 		)
 		(uuid "e8f18423-2edb-41dc-9fec-03cc1986775a")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 225.1748 146.05 0)
+			(at 219.7924 146.05 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -7779,7 +7791,7 @@
 			)
 		)
 	)
-	(global_label "BUS-VCAP"
+	(global_label "VCAP"
 		(shape input)
 		(at 242.57 86.36 0)
 		(fields_autoplaced yes)
@@ -7791,7 +7803,7 @@
 		)
 		(uuid "f70d0308-17bd-41ae-b213-c27dc2573792")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 255.6548 86.36 0)
+			(at 250.2724 86.36 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -10729,7 +10741,7 @@
 				)
 			)
 		)
-		(property "Value" "3V3"
+		(property "Value" "VCAP"
 			(at 39.37 115.57 0)
 			(effects
 				(font
@@ -12374,72 +12386,6 @@
 			(project "e5"
 				(path "/a9584426-529a-4e0b-ae47-a85b2f3eafef"
 					(reference "R5")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "power:+3V3")
-		(at 49.53 115.57 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(fields_autoplaced yes)
-		(uuid "cd7b267e-c951-4e60-a9c1-47f35a7675a5")
-		(property "Reference" "#PWR014"
-			(at 49.53 119.38 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Value" "+3V3"
-			(at 49.53 110.49 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" ""
-			(at 49.53 115.57 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" ""
-			(at 49.53 115.57 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "Power symbol creates a global label with name \"+3V3\""
-			(at 49.53 115.57 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "e8a704c5-eaa0-4f21-93a4-807b0a4ca5d6")
-		)
-		(instances
-			(project "lora"
-				(path "/a9584426-529a-4e0b-ae47-a85b2f3eafef"
-					(reference "#PWR014")
 					(unit 1)
 				)
 			)
