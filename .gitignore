@@ -6,6 +6,8 @@
 hardware/demo/lora/lora-backups
 phy/sim/design.out
 
+*.lck
+
 *.000
 *.bak
 *.bck
